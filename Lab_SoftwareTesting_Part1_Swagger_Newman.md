@@ -519,12 +519,12 @@ npm run dev
 4. **คัดลอก token** จาก Response body
 
 ```
-Response Code         : ______
-Token (15 ตัวแรก)     : ______________________________...
+Response Code         : 200
+Token (15 ตัวแรก)     : eyJhbGciOiJIUzI1...
 ```
 
 ### 📸 แทรกภาพหน้าจอ Swagger UI — POST /api/login Response ที่นี่
-![Swagger UI-POST /api/login response](images/swagger-UI-Response.png)
+![Swagger UI-POST /api/login response](![alt text](image.png))
 ---
 
 **ขั้นที่ 2 — ตั้งค่า Authorization**
@@ -546,7 +546,7 @@ Token (15 ตัวแรก)     : ______________________________...
 | `/api/bookings/1` | DELETE | ✅ | 200 หรือ 404 | |
 
 ### 📸 แทรกภาพหน้าจอ Swagger UI — GET /api/bookings Response ที่นี่
-![Swagger UI-POST /api/bookings response]('images/swagger-UI-Response.png')
+![Swagger UI-POST /api/bookings response](![alt text](image-1.png))![alt text](image-2.png)![alt text](image-3.png)![alt text](image-4.png)![alt text](image-5.png)![alt text](image-6.png)
 ---
 
 **ขั้นที่ 4 — ทดสอบกรณีไม่มี Token**
@@ -554,8 +554,8 @@ Token (15 ตัวแรก)     : ______________________________...
 กดปุ่ม **Authorize** → **Logout** → **Close** แล้วลอง GET /api/bookings ใหม่:
 
 ```
-Response Code เมื่อไม่มี Token : ______
-Error message ที่ได้รับ        : ______________________________
+Response Code เมื่อไม่มี Token : 401
+Error message ที่ได้รับ        : "message": "ไม่ได้ส่ง Token มาด้วย"
 ```
 
 ---
@@ -614,7 +614,7 @@ LoginResponse: {
 ```
 
 📸 แทรกภาพหน้าจอ Swagger UI ที่แสดง Schema `LoginResponse` ใน Models section:
-![Swagger UI-POST LoginResponse](images/swagger-UI-Response.png)
+![Swagger UI-POST LoginResponse](![alt text](image-7.png))
 > ___
 
 ---
@@ -653,7 +653,7 @@ app.get('/api/health', (req, res) => {
 ```
 
 📸 แทรกภาพหน้าจอ Swagger UI ที่แสดง /api/health endpoint และ Response จริง:
-![Swagger UI-health check](images/swagger-UI-Response.png)
+![Swagger UI-health check](![alt text](image-8.png))
 > ___
 
 ---
@@ -670,9 +670,9 @@ app.get('/api/health', (req, res) => {
 Login ใน Swagger UI → Authorize → รอ 6 วินาที → ลอง GET /api/bookings:
 
 ```
-Response Code หลัง token หมดอายุ : ______
-Error message                    : ______________________________
-ข้อแตกต่างระหว่าง 401 กับ 403   : ______________________________
+Response Code หลัง token หมดอายุ : 401
+Error message                    : message": "ไม่ได้ส่ง Token มาด้วย
+ข้อแตกต่างระหว่าง 401 กับ 403   : ไม่รู้ว่าเป็นใคร (Unauthenticated)	รู้ว่าเป็นใครแล้ว (Authenticated)
 ```
 
 > แก้กลับเป็น `'1h'` ก่อนทำส่วนที่ 2
@@ -1083,17 +1083,15 @@ pm.environment.unset("bookingId");
 
 ```javascript
 // เพิ่มใน Request 5 (GET /api/bookings/:id) ใน create-newman-files.js
-pm.test("____________________________", function() {
+pm.test("Check if fullname is not empty", function() {
   const d = pm.response.json();
-  pm.expect(d.fullname).____________________________; // ตรวจสอบ fullname ไม่ว่าง
+  pm.expect(d.fullname).to.not.be.empty; 
 });
-
 // เพิ่มใน Request 6 (PUT /api/bookings/:id) ใน create-newman-files.js
-pm.test("____________________________", function() {
+pm.test("Check if guests equals 3", function() {
   const d = pm.response.json();
-  pm.expect(d.guests).____________________________; // ตรวจสอบ guests = 3
+  pm.expect(d.guests).to.eql(3); 
 });
-```
 
 ---
 
@@ -1109,7 +1107,7 @@ pm.test("____________________________", function() {
 
 # รันพื้นฐาน
 npx newman run newman/hotel-booking-collection.json \
-  -e newman/hotel-booking-env.json
+  npx newman run newman/hotel-booking-collection.json
 
 # รันพร้อม HTML Report
 npx newman run newman/hotel-booking-collection.json \
