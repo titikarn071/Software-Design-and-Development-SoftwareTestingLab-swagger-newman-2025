@@ -29,8 +29,8 @@ const swaggerOptions = {
     components: {
       securitySchemes: {
         bearerAuth: {
-          type:         'http',
-          scheme:       'bearer',
+          type:          'http',
+          scheme:        'bearer',
           bearerFormat: 'JWT',
         },
       },
@@ -52,13 +52,12 @@ const swaggerOptions = {
             created_at: { type: 'string',  example: '2026-01-01T00:00:00.000Z' },
           },
         },
-        // ข้อ 1.1 — เพิ่ม Schema ใหม่ LoginResponse
         LoginResponse: {
           type: 'object',
           properties: {
             token: {
               type: 'string',
-              description: 'แก้ไข Login Response description โดย [ชื่อ-นามสกุล ของคุณ]',
+              description: 'แก้ไข Login Response description โดย ฐิติกาญจน์ รัตนะเอี่ยม',
               example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
             },
             user: {
@@ -74,7 +73,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ['./server.js'],
+  apis: ['./backend/server.js', './server.js'], 
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -84,25 +83,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // API Endpoints
 // =================================================================
 
-/**
- * @swagger
- * /api/health:
- * get:
- * summary: ตรวจสอบสถานะของ Server
- * description: ใช้สำหรับ Health Check — ไม่ต้องการ Authentication
- * tags: [System]
- * responses:
- * 200:
- * description: Server ทำงานปกติ
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * status:  { type: string,  example: ok }
- * uptime:  { type: number,  example: 120.5 }
- * time:    { type: string,  example: '2026-03-12T16:10:00.000Z' }
- */
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -111,39 +91,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-/**
- * @swagger
- * /api/login:
- * post:
- * summary: เข้าสู่ระบบ
- * description: ตรวจสอบ username/password และคืนค่า JWT Token
- * tags: [Authentication]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required: [username, password]
- * properties:
- * username:
- * type: string
- * example: admin
- * password:
- * type: string
- * example: admin123
- * responses:
- * 200:
- * description: เข้าสู่ระบบสำเร็จ — คืน JWT Token
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/LoginResponse'
- * 400:
- * description: ไม่ได้ส่ง username หรือ password
- * 401:
- * description: ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง
- */
 app.post('/api/login', (req, res) => { 
   res.status(200).json({ 
     token: "eyJhbGciOiJIUzI1...", 
@@ -151,7 +98,100 @@ app.post('/api/login', (req, res) => {
   }); 
 });
 
-// ... (ใส่ API /api/bookings อื่นๆ ต่อจากนี้)
+// ─────────────────────────────────────────────────────────────
+// ✅ ส่วนที่เพิ่มใหม่ 1: API สำหรับ CheckIn (Mockup)
+// ออกแบบโดย: ฐิติกาญจน์ รัตนะเอี่ยม (รหัสนักศึกษา: 68030071)
+// ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/bookings/{id}/checkin:
+ * post:
+ * summary: เช็คอินการจอง
+ * tags: [Bookings]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: integer
+ * responses:
+ * 200:
+ * description: OK
+ */
+app.post('/api/bookings/:id/checkin', (req, res) => {
+    res.status(200).json({
+        message: "Check-in successful",
+        bookingId: parseInt(req.params.id),
+        checkinTime: new Date().toISOString(),
+        status: "confirmed",
+        updatedBy: "ฐิติกาญจน์ รัตนะเอี่ยม (68030071)"
+    });
+});
+
+// ─────────────────────────────────────────────────────────────
+// ✅ ส่วนที่เพิ่มใหม่ 2: API สำหรับ CheckOut (Mockup)
+// ออกแบบโดย: ฐิติกาญจน์ รัตนะเอี่ยม (รหัสนักศึกษา: 68030071)
+// ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/bookings/{id}/checkout:
+ * post:
+ * summary: เช็คเอาท์การจอง
+ * tags: [Bookings]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: integer
+ * responses:
+ * 200:
+ * description: OK
+ */
+app.post('/api/bookings/:id/checkout', (req, res) => {
+    res.status(200).json({
+        message: "Check-out completed successfully",
+        bookingId: parseInt(req.params.id),
+        checkoutTime: new Date().toISOString(),
+        stayDuration: "2 Nights",
+        totalAmount: 3500.00,
+        currency: "THB",
+        paymentStatus: "Paid",
+        updatedBy: "ฐิติกาญจน์ รัตนะเอี่ยม (68030071)"
+    });
+});
+
+// ─────────────────────────────────────────────────────────────
+// ✅ ส่วนที่เพิ่มใหม่ 3: API สำหรับ ConfirmCheckOut (Mockup)
+// ออกแบบโดย: ฐิติกาญจน์ รัตนะเอี่ยม (รหัสนักศึกษา: 68030071)
+// ─────────────────────────────────────────────────────────────
+/**
+ * @swagger
+ * /api/bookings/{id}/confirm-checkout:
+ * post:
+ * summary: ยืนยันการเช็คเอาท์
+ * tags: [Bookings]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: integer
+ * responses:
+ * 200:
+ * description: OK
+ */
+app.post('/api/bookings/:id/confirm-checkout', (req, res) => {
+    res.status(200).json({
+        status: "success",
+        message: "Payment confirmed and Check-out finalized",
+        transactionId: "TXN-" + Date.now(),
+        bookingId: parseInt(req.params.id),
+        confirmedAt: new Date().toISOString(),
+        confirmedBy: "ฐิติกาญจน์ รัตนะเอี่ยม (68030071)"
+    });
+});
+// ─────────────────────────────────────────────────────────────
 
 const PORT = 3001;
 app.listen(PORT, () => {

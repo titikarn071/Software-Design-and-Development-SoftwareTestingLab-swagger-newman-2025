@@ -24,7 +24,7 @@ const env = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 2. Collection — 7 Requests พร้อม pm.test() ครบชุด
+// 2. Collection — 8 Requests พร้อม pm.test() ครบชุด
 // ─────────────────────────────────────────────────────────────
 const collection = {
   info: {
@@ -51,6 +51,11 @@ const collection = {
         '});',
         'pm.test("Response time is less than 2000ms", function() {',
         '  pm.expect(pm.response.responseTime).to.be.below(2000);',
+        '});',
+        // --- เพิ่มข้อ 2.3 ด้านล่างนี้ ---
+        'pm.test("user.id is a positive number", function() {',
+        '  const d = pm.response.json();',
+        '  pm.expect(d.user.id).to.be.a("number").and.above(0);',
         '});'
       ]}}],
       request: {
@@ -82,9 +87,13 @@ const collection = {
         body: {
           mode: 'raw',
           raw: JSON.stringify({
-            fullname: 'นักศึกษา ทดสอบ Newman', email: 'newman@test.com',
-            phone: '0812345678', checkin: '2026-12-01', checkout: '2026-12-03',
-            roomtype: 'standard', guests: 2
+            fullname: 'ฐิติกาญจน์ รัตนะเอี่ยม',
+            email:    '68030071@kmitl.ac.th',
+            phone:    '0838903307',
+            checkin:  '2026-12-01', 
+            checkout: '2026-12-03',
+            roomtype: 'standard',   
+            guests: 2
           })
         },
         url: { raw: '{{baseUrl}}/api/bookings', host: ['{{baseUrl}}'], path: ['api', 'bookings'] }
@@ -218,6 +227,26 @@ const collection = {
           raw: '{{baseUrl}}/api/bookings/{{bookingId}}',
           host: ['{{baseUrl}}'], path: ['api', 'bookings', '{{bookingId}}']
         }
+      }
+    },
+
+    // --- เพิ่มข้อ 2.4 (Request ที่ 8) ด้านล่างนี้ ---
+    {
+      name: '8. POST /api/login — Wrong Password',
+      event: [{ listen: 'test', script: { type: 'text/javascript', exec: [
+        'pm.test("Status code is 401 Unauthorized", function () {',
+        '    pm.response.to.have.status(401);',
+        '});',
+        'pm.test("Response contains error message", function () {',
+        '    const jsonData = pm.response.json();',
+        '    pm.expect(jsonData.message).to.include("Invalid");',
+        '});'
+      ]}}],
+      request: {
+        method: 'POST',
+        header: [{ key: 'Content-Type', value: 'application/json' }],
+        body: { mode: 'raw', raw: JSON.stringify({ username: 'admin', password: 'wrongpassword' }) },
+        url: { raw: '{{baseUrl}}/api/login', host: ['{{baseUrl}}'], path: ['api', 'login'] }
       }
     }
   ]
